@@ -1,0 +1,19 @@
+{
+    "name": "AntiserviceBot",
+    "description": "telegram's antiservice bot",
+    "logo": "https://imgur.com/download/9StGcln",
+    "keywords": [
+        "Antiservice",
+        "telegram",
+        "bot"
+    ],
+    "repository": "https://github.com/Anandpskerala/antiservicebot",
+    "website": "https://github.com/Anandpskerala/antiservicebot",
+    "success_url": "https://t.me/Anti_ServiceBot",
+    "env": {
+        "TOKEN": {
+            "description": "Get this value from @BotFather in telegram"
+        }
+    }
+
+}
