@@ -11,7 +11,7 @@ package main
 
 import (
 	"fmt"
-              "os"
+	"os"
 	"log"
 
 	"github.com/PaulSonOfLars/gotgbot/v2"
