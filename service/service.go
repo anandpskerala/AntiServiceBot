@@ -10,46 +10,45 @@
 package service
 
 import (
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
-	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"github.com/PaulSonOfLars/gotgbot/handlers/Filters"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers/filters"
 )
 
-func antiExit(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiExit(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 }
 
-func antiEntry(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiEntry(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 }
 
-func antiPin(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiPin(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 }
 
-func antiMigrate(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiMigrate(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 
 }
-func antiMigrateTo(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiMigrateTo(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 }
 
-func antiMigrateFrom(b ext.Bot, u *gotgbot.Update) error {
-	b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
+func antiMigrateFrom(b *ext.Context) error {
+	b.Bot.DeleteMessage(b.EffectiveChat.Id, b.EffectiveMessage.MessageId)
 	return nil
 }
-func LoadService(u *gotgbot.Updater) {
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.NewChatMembers(), antiEntry))
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.LeftChatMembers(), antiExit))
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.Pin, antiPin))
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.Migrate(), antiMigrate))
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.MigrateFrom(), antiMigrateTo))
-	u.Dispatcher.AddHandler(handlers.NewMessage(Filters.MigrateTo(), antiMigrateFrom))
+func LoadService(u ext.Updater) {
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.NewChatMembers, antiEntry))
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.LeftChatMembers, antiExit))
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.Pin, antiPin))
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.Migrate, antiMigrate))
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.MigrateTo, antiMigrateTo))
+	u.Dispatcher.AddHandler(handlers.NewMessage(filters.MigrateFrom, antiMigrateFrom))
 }
