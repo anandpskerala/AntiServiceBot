@@ -12,63 +12,44 @@ package main
 import (
 	"fmt"
 	"os"
+	"log"
 
-	//"github.com/anandpskerala/antiservicebot/config"
+	"github.com/PaulSonOfLars/gotgbot/v2"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 	"github.com/anandpskerala/antiservicebot/service"
-
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
-	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"github.com/PaulSonOfLars/gotgbot/parsemode"
-
-	//"github.com/kelseyhightower/envconfig"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	cfg := zap.NewProductionEncoderConfig()
-
-	cfg.EncodeLevel = zapcore.CapitalLevelEncoder
-
-	cfg.EncodeTime = zapcore.RFC3339TimeEncoder
-
-	logger := zap.New(zapcore.NewCore(zapcore.NewConsoleEncoder(cfg), os.Stdout, zap.InfoLevel))
-
-	defer logger.Sync()
-
-	l := logger.Sugar()
 
 	token := os.Getenv("TOKEN")
-	u, err := gotgbot.NewUpdater(logger, token)
+	b, err := gotgbot.NewBot(token)
 	if err != nil {
-		l.Fatalw("Updater failed starting", zap.Error(err))
+		log.Fatalf("New bot creation failed", err.Error())
 		return
 	}
+
+	u := ext.NewUpdater(b, nil)
 
 	service.LoadService(u)
-
 	u.Dispatcher.AddHandler(handlers.NewCommand("start", start))
-	err = u.StartPolling()
+	err = u.StartPolling(b, &ext.PollingOpts{Clean: true})
 	if err != nil {
-		l.Fatalw("Polling failed", zap.Error(err))
+		log.Fatalf("Polling failed", err.Error())
 		return
 	}
-	bot := u.Bot.FirstName
+	bot := u.Bot.User.FirstName
 	fmt.Printf("Successfully logged as %s", bot)
 
 	u.Idle()
 
 }
 
-func start(b ext.Bot, u *gotgbot.Update) error {
+func start(b *ext.Context) error {
 
-	msg := b.NewSendableMessage(u.EffectiveChat.Id, "Hi Buddy, I am <b>AntiServiceMessageBot</b>\n\nI am a bot which can delete service message like when a user <u>enters</u> or <u>exists</u> a group\n\nI am a fully written in <b>Go</b>\n\n<i>Note</i> :  You should promote me as an admin and give atleast two admins rights shown below for getting my full service:\n * Right to Deleted Messages\n * Right to add admins\n\n<b>Support Group</b> : <b><a href='https://t.me/Keralasbots'>KeralaBots</a></b>")
-	msg.ReplyToMessageId = u.EffectiveMessage.MessageId
-	msg.ParseMode = parsemode.Html
-	_, err := msg.Send()
+	_, err := b.Bot.SendMessage(b.EffectiveChat.Id, "Hi Buddy, I am <b>AntiServiceMessageBot</b>\n\nI am a bot which can delete service message like when a user <u>enters</u> or <u>exists</u> a group\n\nI am a fully written in <b>Go</b>\n\n<i>Note</i> :  You should promote me as an admin and give atleast two admins rights shown below for getting my full service:\n * Right to Deleted Messages\n * Right to add admins\n\n<b>Support Group</b> : <b><a href='https://t.me/Keralasbots'>KeralaBots</a></b>", &gotgbot.SendMessageOpts{ReplyToMessageId: b.EffectiveMessage.MessageId, ParseMode: "HTML"})
 	if err != nil {
-		b.Logger.Warnw("Error in sending", zap.Error(err))
+		log.Printf("Error in sending", err.Error())
 	}
 	return err
 }
